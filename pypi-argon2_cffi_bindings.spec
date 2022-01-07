@@ -16,7 +16,7 @@ License  : MIT
 Requires: pypi-argon2_cffi_bindings-python = %{version}-%{release}
 Requires: pypi-argon2_cffi_bindings-python3 = %{version}-%{release}
 BuildRequires : buildreq-distutils3
-BuildRequires : pluggy
+BuildRequires : pypi(pluggy)
 BuildRequires : py-python
 BuildRequires : pypi(cffi)
 BuildRequires : pypi(setuptools)
@@ -24,7 +24,7 @@ BuildRequires : pypi(setuptools_scm)
 BuildRequires : pypi(wheel)
 BuildRequires : pytest
 BuildRequires : tox
-BuildRequires : virtualenv
+BuildRequires : pypi(virtualenv)
 
 %description
 # Low-level Python CFFI Bindings for Argon2
