@@ -6,29 +6,38 @@
 #
 Name     : pypi-argon2_cffi_bindings
 Version  : 21.2.0
-Release  : 3
+Release  : 4
 URL      : https://files.pythonhosted.org/packages/b9/e9/184b8ccce6683b0aa2fbb7ba5683ea4b9c5763f1356347f1312c32e3c66e/argon2-cffi-bindings-21.2.0.tar.gz
 Source0  : https://files.pythonhosted.org/packages/b9/e9/184b8ccce6683b0aa2fbb7ba5683ea4b9c5763f1356347f1312c32e3c66e/argon2-cffi-bindings-21.2.0.tar.gz
 Source1  : https://files.pythonhosted.org/packages/b9/e9/184b8ccce6683b0aa2fbb7ba5683ea4b9c5763f1356347f1312c32e3c66e/argon2-cffi-bindings-21.2.0.tar.gz.asc
 Summary  : Low-level CFFI bindings for Argon2
 Group    : Development/Tools
 License  : MIT
+Requires: pypi-argon2_cffi_bindings-license = %{version}-%{release}
 Requires: pypi-argon2_cffi_bindings-python = %{version}-%{release}
 Requires: pypi-argon2_cffi_bindings-python3 = %{version}-%{release}
 BuildRequires : buildreq-distutils3
-BuildRequires : pypi(pluggy)
-BuildRequires : py-python
 BuildRequires : pypi(cffi)
+BuildRequires : pypi(py)
 BuildRequires : pypi(setuptools)
 BuildRequires : pypi(setuptools_scm)
 BuildRequires : pypi(wheel)
-BuildRequires : pytest
-BuildRequires : tox
-BuildRequires : pypi(virtualenv)
+BuildRequires : pypi-pluggy
+BuildRequires : pypi-pytest
+BuildRequires : pypi-tox
+BuildRequires : pypi-virtualenv
 
 %description
 # Low-level Python CFFI Bindings for Argon2
 *argon2-cffi-bindings* provides low-level [*CFFI*](https://cffi.readthedocs.io/) bindings to the [*Argon2*] password hashing algorithm including a vendored version of them.
+
+%package license
+Summary: license components for the pypi-argon2_cffi_bindings package.
+Group: Default
+
+%description license
+license components for the pypi-argon2_cffi_bindings package.
+
 
 %package python
 Summary: python components for the pypi-argon2_cffi_bindings package.
@@ -59,7 +68,7 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1638979910
+export SOURCE_DATE_EPOCH=1649692320
 export GCC_IGNORE_WERROR=1
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
@@ -74,6 +83,8 @@ python3 -m build --wheel --skip-dependency-check --no-isolation
 %install
 export MAKEFLAGS=%{?_smp_mflags}
 rm -rf %{buildroot}
+mkdir -p %{buildroot}/usr/share/package-licenses/pypi-argon2_cffi_bindings
+cp %{_builddir}/argon2-cffi-bindings-21.2.0/LICENSE %{buildroot}/usr/share/package-licenses/pypi-argon2_cffi_bindings/7a402078b963a6caa10507b7350e3e0b53184a58
 pip install --root=%{buildroot} --no-deps --ignore-installed dist/*.whl
 echo ----[ mark ]----
 cat %{buildroot}/usr/lib/python3*/site-packages/*/requires.txt || :
@@ -81,6 +92,10 @@ echo ----[ mark ]----
 
 %files
 %defattr(-,root,root,-)
+
+%files license
+%defattr(0644,root,root,0755)
+/usr/share/package-licenses/pypi-argon2_cffi_bindings/7a402078b963a6caa10507b7350e3e0b53184a58
 
 %files python
 %defattr(-,root,root,-)
