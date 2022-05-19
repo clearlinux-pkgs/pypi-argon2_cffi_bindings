@@ -6,13 +6,15 @@
 #
 Name     : pypi-argon2_cffi_bindings
 Version  : 21.2.0
-Release  : 5
+Release  : 6
 URL      : https://files.pythonhosted.org/packages/b9/e9/184b8ccce6683b0aa2fbb7ba5683ea4b9c5763f1356347f1312c32e3c66e/argon2-cffi-bindings-21.2.0.tar.gz
 Source0  : https://files.pythonhosted.org/packages/b9/e9/184b8ccce6683b0aa2fbb7ba5683ea4b9c5763f1356347f1312c32e3c66e/argon2-cffi-bindings-21.2.0.tar.gz
 Source1  : https://files.pythonhosted.org/packages/b9/e9/184b8ccce6683b0aa2fbb7ba5683ea4b9c5763f1356347f1312c32e3c66e/argon2-cffi-bindings-21.2.0.tar.gz.asc
 Summary  : Low-level CFFI bindings for Argon2
 Group    : Development/Tools
 License  : MIT
+Requires: pypi-argon2_cffi_bindings-filemap = %{version}-%{release}
+Requires: pypi-argon2_cffi_bindings-lib = %{version}-%{release}
 Requires: pypi-argon2_cffi_bindings-license = %{version}-%{release}
 Requires: pypi-argon2_cffi_bindings-python = %{version}-%{release}
 Requires: pypi-argon2_cffi_bindings-python3 = %{version}-%{release}
@@ -30,6 +32,24 @@ BuildRequires : pypi-virtualenv
 %description
 # Low-level Python CFFI Bindings for Argon2
 *argon2-cffi-bindings* provides low-level [*CFFI*](https://cffi.readthedocs.io/) bindings to the [*Argon2*] password hashing algorithm including a vendored version of them.
+
+%package filemap
+Summary: filemap components for the pypi-argon2_cffi_bindings package.
+Group: Default
+
+%description filemap
+filemap components for the pypi-argon2_cffi_bindings package.
+
+
+%package lib
+Summary: lib components for the pypi-argon2_cffi_bindings package.
+Group: Libraries
+Requires: pypi-argon2_cffi_bindings-license = %{version}-%{release}
+Requires: pypi-argon2_cffi_bindings-filemap = %{version}-%{release}
+
+%description lib
+lib components for the pypi-argon2_cffi_bindings package.
+
 
 %package license
 Summary: license components for the pypi-argon2_cffi_bindings package.
@@ -51,6 +71,7 @@ python components for the pypi-argon2_cffi_bindings package.
 %package python3
 Summary: python3 components for the pypi-argon2_cffi_bindings package.
 Group: Default
+Requires: pypi-argon2_cffi_bindings-filemap = %{version}-%{release}
 Requires: python3-core
 Provides: pypi(argon2_cffi_bindings)
 Requires: pypi(cffi)
@@ -62,13 +83,16 @@ python3 components for the pypi-argon2_cffi_bindings package.
 %prep
 %setup -q -n argon2-cffi-bindings-21.2.0
 cd %{_builddir}/argon2-cffi-bindings-21.2.0
+pushd ..
+cp -a argon2-cffi-bindings-21.2.0 buildavx2
+popd
 
 %build
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1649711332
+export SOURCE_DATE_EPOCH=1652995275
 export GCC_IGNORE_WERROR=1
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
@@ -79,6 +103,15 @@ export FFLAGS="$FFLAGS -O3 -ffat-lto-objects -flto=auto "
 export CXXFLAGS="$CXXFLAGS -O3 -ffat-lto-objects -flto=auto "
 export MAKEFLAGS=%{?_smp_mflags}
 python3 -m build --wheel --skip-dependency-check --no-isolation
+pushd ../buildavx2/
+export CFLAGS="$CFLAGS -m64 -march=x86-64-v3 -Wl,-z,x86-64-v3 "
+export CXXFLAGS="$CXXFLAGS -m64 -march=x86-64-v3 -Wl,-z,x86-64-v3 "
+export FFLAGS="$FFLAGS -m64 -march=x86-64-v3 -Wl,-z,x86-64-v3 "
+export FCFLAGS="$FCFLAGS -m64 -march=x86-64-v3 "
+export LDFLAGS="$LDFLAGS -m64 -march=x86-64-v3 "
+python3 -m build --wheel --skip-dependency-check --no-isolation
+
+popd
 
 %install
 export MAKEFLAGS=%{?_smp_mflags}
@@ -89,9 +122,26 @@ pip install --root=%{buildroot} --no-deps --ignore-installed dist/*.whl
 echo ----[ mark ]----
 cat %{buildroot}/usr/lib/python3*/site-packages/*/requires.txt || :
 echo ----[ mark ]----
+pushd ../buildavx2/
+export CFLAGS="$CFLAGS -m64 -march=x86-64-v3 -Wl,-z,x86-64-v3 "
+export CXXFLAGS="$CXXFLAGS -m64 -march=x86-64-v3 -Wl,-z,x86-64-v3 "
+export FFLAGS="$FFLAGS -m64 -march=x86-64-v3 -Wl,-z,x86-64-v3 "
+export FCFLAGS="$FCFLAGS -m64 -march=x86-64-v3 "
+export LDFLAGS="$LDFLAGS -m64 -march=x86-64-v3 "
+pip install --root=%{buildroot}-v3 --no-deps --ignore-installed dist/*.whl
+popd
+/usr/bin/elf-move.py avx2 %{buildroot}-v3 %{buildroot}/usr/share/clear/optimized-elf/ %{buildroot}/usr/share/clear/filemap/filemap-%{name}
 
 %files
 %defattr(-,root,root,-)
+
+%files filemap
+%defattr(-,root,root,-)
+/usr/share/clear/filemap/filemap-pypi-argon2_cffi_bindings
+
+%files lib
+%defattr(-,root,root,-)
+/usr/share/clear/optimized-elf/other*
 
 %files license
 %defattr(0644,root,root,0755)
