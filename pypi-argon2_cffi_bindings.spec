@@ -7,7 +7,7 @@
 #
 Name     : pypi-argon2_cffi_bindings
 Version  : 21.2.0
-Release  : 18
+Release  : 19
 URL      : https://files.pythonhosted.org/packages/b9/e9/184b8ccce6683b0aa2fbb7ba5683ea4b9c5763f1356347f1312c32e3c66e/argon2-cffi-bindings-21.2.0.tar.gz
 Source0  : https://files.pythonhosted.org/packages/b9/e9/184b8ccce6683b0aa2fbb7ba5683ea4b9c5763f1356347f1312c32e3c66e/argon2-cffi-bindings-21.2.0.tar.gz
 Source1  : https://files.pythonhosted.org/packages/b9/e9/184b8ccce6683b0aa2fbb7ba5683ea4b9c5763f1356347f1312c32e3c66e/argon2-cffi-bindings-21.2.0.tar.gz.asc
@@ -18,7 +18,9 @@ Requires: pypi-argon2_cffi_bindings-license = %{version}-%{release}
 Requires: pypi-argon2_cffi_bindings-python = %{version}-%{release}
 Requires: pypi-argon2_cffi_bindings-python3 = %{version}-%{release}
 BuildRequires : buildreq-distutils3
+BuildRequires : pypi(cffi)
 BuildRequires : pypi(py)
+BuildRequires : pypi(setuptools)
 BuildRequires : pypi-pluggy
 BuildRequires : pypi-pytest
 BuildRequires : pypi-tox
@@ -71,7 +73,7 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1683035582
+export SOURCE_DATE_EPOCH=1683123968
 export GCC_IGNORE_WERROR=1
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
@@ -123,4 +125,5 @@ popd
 
 %files python3
 %defattr(-,root,root,-)
+/V3/usr/lib/python3*/*
 /usr/lib/python3*/*
